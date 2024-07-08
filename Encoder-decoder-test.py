@@ -1,36 +1,20 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
-# Define the Encoder
-class Encoder(nn.Module):
-    def __init__(self, input_size, hidden_size):
-        super(Encoder, self).__init__()
-        self.hidden_size = hidden_size
-        self.embedding = nn.Embedding(input_size, hidden_size)
-        self.gru = nn.GRU(hidden_size, hidden_size)
+tensor1 = torch.tensor([1.0,2.0,3.0])
+tensor2 = torch.tensor([4.0,5.0,6.0])
 
-    def forward(self, input):
-        embedded = self.embedding(input)
-        output, hidden = self.gru(embedded)
-        return output, hidden
+# Define the Loss Function
+def calculate_loss(predicted_displacement, true_displacement):
+    # Calculate the displacement error
+    displacement_error = predicted_displacement - true_displacement
+    # Calculate the average displacement error
+    ADE = torch.mean(displacement_error)
+    return ADE
 
-# Define the Decoder
-class Decoder(nn.Module):
-    def __init__(self, hidden_size, output_size):
-        super(Decoder, self).__init__()
-        self.hidden_size = hidden_size
-        self.embedding = nn.Embedding(output_size, hidden_size)
-        self.gru = nn.GRU(hidden_size, hidden_size)
-        self.out = nn.Linear(hidden_size, output_size)
+# Calculate the average displacement error during training or evaluation
+ADE = calculate_loss(tensor1, tensor2)
 
-    def forward(self, input, hidden):
-        output = self.embedding(input)
-        output, hidden = self.gru(output, hidden)
-        output = self.out(output)
-        return output, hidden
-
-# Instantiate the Encoder and Decoder
-encoder = Encoder(input_size, hidden_size)
-decoder = Decoder(hidden_size, output_size)
-
-# Training loop and optimization not included in this example
+# Print the average displacement error
+print(f"Average Displacement Error: {ADE}")
